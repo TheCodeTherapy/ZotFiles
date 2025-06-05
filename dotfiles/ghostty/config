@@ -8,10 +8,10 @@ font-family = "JetBrainsMono Nerd Font"
 window-padding-x = 10
 window-padding-y = 0
 resize-overlay = never
-window-decoration = false
-gtk-titlebar=false
+window-decoration = true
+gtk-titlebar=true
 
-gtk-adwaita=false
+gtk-adwaita=true
 adw-toolbar-style = flat
 
 cursor-style = underline
