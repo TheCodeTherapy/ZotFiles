@@ -164,6 +164,7 @@ link_dotfiles() {
   mkdir -p "$target_config/Code/User"
   mkdir -p "$target_config/VSCodium/User"
   mkdir -p "$target_config/systemd/user"
+  mkdir -p "$target_config/environment.d"
 
   declare -A files_to_link=(
     ["${DOTDOT}/profile/profile"]="$target_home/.profile"
@@ -171,6 +172,7 @@ link_dotfiles() {
     ["${DOTDOT}/bash/inputrc"]="$target_home/.inputrc"
     ["${DOTDOT}/zsh/zshrc"]="$target_home/.zshrc"
     ["${DOTDOT}/zsh/zshenv"]="$target_home/.zshenv"
+    ["${DOTDOT}/environment.d/99-user-path.conf"]="$target_config/environment.d/99-user-path.conf"
     ["${DOTDOT}/p10k/p10k.zsh"]="$target_home/.p10k.zsh"
     ["${DOTDOT}/tmux/tmux.conf"]="$target_home/.tmux.conf"
     ["${DOTDOT}/x/XCompose"]="$target_home/.XCompose"
