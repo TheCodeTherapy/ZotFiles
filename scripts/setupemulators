@@ -1,0 +1,162 @@
+#!/bin/bash
+#set -eu -o pipefail
+
+#=============================================================================
+# @TheCodeTherapy - https://mgz.me
+# Emulation setup script
+#=============================================================================
+
+ME="/home/$(whoami)"
+EMUDIR="${ME}/Emulation"
+FRONTDIR="${EMUDIR}/frontends"
+
+mkdir -p ${EMUDIR}
+
+declare -rA COLORS=(
+    [RED]=$'\033[0;31m'
+    [GREEN]=$'\033[0;32m'
+    [BLUE]=$'\033[0;34m'
+    [PURPLE]=$'\033[0;35m'
+    [CYAN]=$'\033[0;36m'
+    [WHITE]=$'\033[0;37m'
+    [YELLOW]=$'\033[0;33m'
+    [BOLD]=$'\033[1m'
+    [OFF]=$'\033[0m'
+)
+
+print_yellow () {
+    echo -e "\n${COLORS[YELLOW]}${1}${COLORS[OFF]}\n"
+    sleep 1
+}
+
+print_green () {
+    echo -e "\n${COLORS[GREEN]}${1}${COLORS[OFF]}\n"
+    sleep 1
+}
+
+install_mame_dependencies () {
+    msg="INSTALLING MAME DEPENDENCIES..."
+    print_yellow "${msg}"
+    sudo apt --assume-yes install git build-essential python3 \
+        libsdl2-dev libsdl2-ttf-dev libfontconfig-dev \
+        libpulse-dev qtbase5-dev qtbase5-dev-tools qtchooser \
+        qt5-qmake
+}
+
+build_mame0226 () {
+    if [[ -f ${EMUDIR}/emulators/mame/mame ]]; then
+        msg="MAME already installed."
+        print_green "${msg}"
+    else
+        msg="BUILDING MAME..."
+        print_yellow "${msg}"
+        mkdir -p ${EMUDIR}/emulators
+        cd ${EMUDIR}/emulators
+        # git clone -b mame0226 --depth 1 \
+        #     https://github.com/TheCodeTherapy/mame.git mame0226
+        git clone --depth 1 https://github.com/mamedev/mame.git
+        rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
+        cd mame
+        NOWERROR=1 make TOOLS=1 REGENIE=1 -j$(nproc) ARCHOPTS=-U_FORTIFY_SOURCE
+        rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
+        cd ..
+        git clone https://github.com/TheCodeTherapy/MAME-PSGS.git
+        mv ./MAME-PSGS/glsl ./mame/.
+        rm -rf MAME-PSGS
+    fi
+}
+
+install_retroarch_dependencies () {
+    msg="INSTALLING RETROARCH DEPENDENCIES..."
+    print_yellow "${msg}"
+    sudo apt --assume-yes install git build-essential g++ \
+        libgl1-mesa-dev libsdl2-dev mesa-common-dev pkg-config
+}
+
+build_retroarch () {
+    if [[ -f ${EMUDIR}/emulators/RetroArch/retroarch ]]; then
+        msg="RetroArch already installed."
+        print_green "${msg}"
+    else
+        msg="BUILDING RETROARCH..."
+        print_yellow "${msg}"
+        mkdir -p ${EMUDIR}/emulators
+        cd ${EMUDIR}/emulators
+        git clone https://github.com/TheCodeTherapy/RetroArch.git
+        cd RetroArch
+        ./configure
+        rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
+        make -j$(nproc)
+        rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
+    fi
+}
+
+install_scummvm_dependencies () {
+    msg="INSTALLING SCUMMVM DEPENDENCIES..."
+    print_yellow "${msg}"
+    sudo apt --assume-yes install g++ make git nasm libsdl2-dev \
+        libsdl2-net-dev liba52-0.7.4-dev libjpeg-turbo8-dev \
+        libmpeg2-4-dev libogg-dev libvorbis-dev libflac-dev \
+        libmad0-dev libpng-dev libtheora-dev libfaad-dev \
+        libfluidsynth-dev libfreetype-dev zlib1g-dev libfribidi-dev \
+        libgif-dev libcurl4-openssl-dev libgtk-3-dev libspeechd-dev \
+        libsndio-dev libunity-dev libvpx-dev libmikmod-dev
+}
+
+build_scummvm () {
+    if [[ -f ${EMUDIR}/emulators/scummvm/scummvm ]]; then
+        msg="SCUMMVM already installed."
+        print_green "${msg}"
+    else
+        msg="BUILDING SCUMMVM..."
+        print_yellow "${msg}"
+        mkdir -p ${EMUDIR}/emulators
+        cd ${EMUDIR}/emulators
+        git clone https://github.com/TheCodeTherapy/scummvm.git
+        rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
+        cd scummvm
+        ./configure
+        rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
+        make -j$(nproc)
+        rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
+    fi
+}
+
+install_attract_dependencies () {
+    msg="INSTALLING ATTRACT-MODE DEPENDENCIES..."
+    print_yellow "${msg}"
+    sudo apt --assume-yes install build-essential pkg-config \
+        libfontconfig1-dev libopenal-dev libsfml-dev \
+        libavutil-dev libavcodec-dev libavformat-dev \
+        libavfilter-dev libswscale-dev libjpeg-dev \
+        libglu1-mesa-dev libxrandr-dev libswresample-dev
+}
+
+build_attract () {
+    mkdir -p ${FRONTDIR}
+    if [[ -f ${FRONTDIR}/attract/attract ]]; then
+        msg="Attract-Mode already installed."
+        print_green "${msg}"
+    else
+        msg="INSTALLING ATTRACT-MODE ..."
+        print_yellow "${msg}"
+        cd ${FRONTDIR}
+        # git clone https://github.com/TheCodeTherapy/attract.git
+        git clone https://github.com/mickelson/attract.git
+        cd attract
+        make -j$(nproc)
+        rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
+    fi
+}
+
+install_mame_dependencies
+build_mame0226
+
+install_retroarch_dependencies
+build_retroarch
+
+install_scummvm_dependencies
+build_scummvm
+
+install_attract_dependencies
+build_attract

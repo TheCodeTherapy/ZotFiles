@@ -1,0 +1,30 @@
+#!/bin/sh
+
+#=============================================================================
+# Browser Launcher Script
+# Allows selection of browser configurations to launch with specific arguments.
+#=============================================================================
+
+OPTIONS="Google Chrome (No Framerate Cap);google-chrome --disable-frame-rate-limit --disable-gpu-vsync --max-gum-fps="9999"
+Google Chrome (WebGPU);google-chrome --enable-unsafe-webgpu --enable-features=Vulkan
+Firefox (Private Mode);firefox --private-window"
+
+THEME="/home/${USER}/ZotFiles/dotfiles/rofi/sp.theme.rasi"
+
+# Display the options using rofi and capture the chosen option
+chosen=$(echo "$OPTIONS" | cut -d ';' -f1 | rofi -dmenu -theme "$THEME")
+[ -z "$chosen" ] && exit
+
+# Extract the associated command for the chosen option
+command=$(echo "$OPTIONS" | grep -F "$chosen" | cut -d ';' -f2-)
+
+if [ -n "$command" ]; then
+    # Execute the selected command
+		echo $command
+    eval "$command" &
+
+    # Notify the user of the executed command
+    notify-send -a "Browser Launcher" "$chosen launched." --expire-time=3000 &
+else
+    notify-send -a "Browser Launcher" "Failed to launch $chosen." --expire-time=3000 &
+fi
