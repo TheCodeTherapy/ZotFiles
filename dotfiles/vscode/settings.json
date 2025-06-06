@@ -1,18 +1,18 @@
 {
   "editor.tabSize": 2,
-  "editor.fontSize": 17,
-  "editor.fontFamily": "'JetBrainsMono Nerd Font', 'NotoMono Nerd Font', 'MesloLGS NF'",
+  "editor.fontSize": 18,
+  "editor.fontFamily": "'M+CodeLat60 Nerd Font Mono', 'JetBrainsMono Nerd Font', 'NotoMono Nerd Font', 'MesloLGS NF'",
   "editor.fontLigatures": false,
 
   "workbench.startupEditor": "none",
   "workbench.colorTheme": "Catppuccin Mocha",
   "workbench.iconTheme": "catppuccin-mocha",
 
-  "window.titleBarStyle": "custom",
+  "window.titleBarStyle": "native",
   "workbench.activityBar.location": "top",
   "window.menuBarVisibility": "toggle",
   "explorer.compactFolders": false,
-  "breadcrumbs.enabled": true,
+  "breadcrumbs.enabled": false,
   "editor.minimap.enabled": false,
   "editor.renderWhitespace": "none",
   "editor.lightbulb.enabled": "off",

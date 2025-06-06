@@ -1,7 +1,7 @@
 theme = catppuccin-mocha
 background-opacity = 0.8
 
-font-family = "JetBrainsMono Nerd Font"
+font-family = "M+CodeLat60 Nerd Font Mono"
 # font-family = "JetBrainsMono Nerd Font"
 # font-family = "NotoMono Nerd Font"
 
@@ -18,7 +18,7 @@ cursor-style = underline
 shell-integration-features = no-cursor
 cursor-style-blink = true
 
-font-size = 13
+font-size = 14
 font-thicken = true
 
 keybind = control+0=reset_font_size
