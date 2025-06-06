@@ -13,14 +13,24 @@ LayoutMode=1
 BorderActivateAll=5
 LayoutMode=1
 
+[Plugins]
+blurEnabled=true
+trackmouseEnabled=true
+zoomEnabled=false
+
 [Tiling]
-padding=21
+padding=17
 
 [Tiling][23fc0f31-5028-5021-a562-b8c6eb2559aa]
-tiles={"layoutDirection":"horizontal","tiles":[{"width":0.2458},{"width":0.5084},{"width":0.24580000000000002}]}
+tiles={"layoutDirection":"horizontal","tiles":[{"width":0.2798},{"width":0.44039999999999996},{"width":0.27980000000000005}]}
 
 [Tiling][b9b11af7-4269-5b5d-b169-39668834e305]
-tiles={"layoutDirection":"horizontal","tiles":[{"width":0.2458},{"width":0.5084},{"width":0.24580000000000002}]}
+tiles={"layoutDirection":"horizontal","tiles":[{"width":0.2798},{"width":0.44039999999999996},{"width":0.27980000000000005}]}
 
 [org.kde.kdecoration2]
+BorderSize=Tiny
 BorderSizeAuto=false
+ButtonsOnLeft=
+ButtonsOnRight=IAX
+library=org.kde.breeze
+theme=Breeze
