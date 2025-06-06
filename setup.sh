@@ -38,7 +38,7 @@ install_basic_packages() {
     python3-gi python3-gi-cairo python3-cairo python3-setuptools p7zip-full
     conky-all zsh-autosuggestions zsh-syntax-highlighting xdotool bear zeal
     lnav multitail gource ccze xscreensaver xscreensaver-data-extra fortune
-    xscreensaver-gl-extra
+    xscreensaver-gl-extra network-manager-openvpn
   )
 
   print_info "Installing basic packages ..."
