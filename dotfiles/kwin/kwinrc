@@ -18,6 +18,12 @@ blurEnabled=true
 trackmouseEnabled=true
 zoomEnabled=false
 
+[TabBox]
+HighlightWindows=false
+LayoutName=compact
+MinimizedMode=1
+MultiScreenMode=1
+
 [Tiling]
 padding=17
 
