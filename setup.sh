@@ -172,7 +172,6 @@ link_dotfiles() {
     ["${DOTDOT}/bash/inputrc"]="$target_home/.inputrc"
     ["${DOTDOT}/zsh/zshrc"]="$target_home/.zshrc"
     ["${DOTDOT}/zsh/zshenv"]="$target_home/.zshenv"
-    ["${DOTDOT}/environment.d/99-user-path.conf"]="$target_config/environment.d/99-user-path.conf"
     ["${DOTDOT}/p10k/p10k.zsh"]="$target_home/.p10k.zsh"
     ["${DOTDOT}/tmux/tmux.conf"]="$target_home/.tmux.conf"
     ["${DOTDOT}/x/XCompose"]="$target_home/.XCompose"
