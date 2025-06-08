@@ -50,8 +50,8 @@ install_basic_packages() {
 install_wine() {
   print_info "Installing Wine ..."
   sudo apt install -y --install-recommends \
-  wine64 wine32 wine32:i386 libwine libwine:i386 winetricks ||
-  handle_error "Failed to install Wine."
+    wine64 wine32 wine32:i386 libwine libwine:i386 winetricks ||
+    handle_error "Failed to install Wine."
 }
 
 install_dev_libs() {
@@ -125,6 +125,7 @@ install_recipes() {
     "$recipe_dir/install_emscripten.sh"
     "$recipe_dir/install_mono.sh"
     "$recipe_dir/install_exa.sh"
+    "$recipe_dir/install_eza.sh"
     "$recipe_dir/install_docker.sh"
     "$recipe_dir/install_dockercompose.sh"
     "$recipe_dir/install_nvidiacontainertk.sh"

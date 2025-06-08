@@ -78,12 +78,17 @@ if [ -x /usr/bin/dircolors ]; then
   alias egrep='egrep --color=auto'
 fi
 
-if [ -f $ME/.cargo/bin/exa ]; then
-  alias ll='exa -bghHlS --git'
-  alias la='exa -bghHlSa --git'
+if [ -f $ME/.cargo/bin/eza ]; then
+  alias ll='eza -lho --git --group-directories-first --no-quotes --hyperlink'
+  alias la='eza -lhoa --git --group-directories-first --no-quotes --hyperlink'
 else
-  alias ll='ls -hl --color=auto'
-  alias la='ls -hlA --color=auto'
+  if [ -f $ME/.cargo/bin/exa ]; then
+    alias ll='exa -bghHlS --git'
+    alias la='exa -bghHlSa --git'
+  else
+    alias ll='ls -hl --color=auto'
+    alias la='ls -hlA --color=auto'
+  fi
 fi
 
 alias vim='nvim'
