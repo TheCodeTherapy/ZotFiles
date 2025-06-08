@@ -20,7 +20,9 @@
 #define BRIGHTNESS 0.1
 #define CONTRAST 1.25
 #define SATURATION 2.1
-#define FADE_FACTOR 0.91
+#define FADE_FACTOR 0.21
+
+#define WHITE_BORDER_PIXELS 2.0
 
 #ifndef COLOR_FRINGING_SPREAD
 #define COLOR_FRINGING_SPREAD 0.0
@@ -186,6 +188,7 @@ mat4 saturationMatrix(float saturation) {
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = fragCoord.xy / iResolution.xy;
+    vec2 ouv = uv;
 
     #ifdef CURVE
     uv = (uv - 0.5) * 2.0;
@@ -276,5 +279,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         fragColor = vec4(clamp(FADE_FACTOR * 2.0, 0.0, 1.0) * fragColor.rgb, clamp(FADE_FACTOR * 2.0, 0.0, 1.0));
     }
     fragColor += highPass * 0.12;
-    fragColor = mix(oTex, fragColor, 0.5);
+    fragColor = mix(oTex, fragColor, 0.8);
+
+    if (WHITE_BORDER_PIXELS > 0.0) {
+      float pixWidth = 2.0 / iResolution.x;
+      float pixHeight = 2.0 / iResolution.y;
+      if (ouv.x < pixWidth || ouv.x > 1.0 - pixWidth || ouv.y < pixHeight || ouv.y > 1.0 - pixHeight) {
+          fragColor.rgb = vec3(1.0);
+      }
+    }
+
 }
