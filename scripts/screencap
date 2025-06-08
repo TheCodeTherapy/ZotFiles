@@ -1,9 +1,10 @@
 #!/bin/bash
 
+# Launch ffplay with specific window title
 ffplay \
   -noborder \
   -x 1920 -y 1080 \
-  -window_title ScreenCap \
+  -window_title ScreenCapture \
   -framedrop \
   -vf "scale=1920:1080" \
   -framerate 30 \
@@ -12,6 +13,16 @@ ffplay \
   -i :0.0+5240,30 \
   >/dev/null 2>&1 &
 
-sleep 3
+# wait for the ffplay window to appear (by title + class)
+for i in {1..50}; do
+    win_id=$(xdotool search --name "ScreenCapture" | head -n 1)
+    if [ -n "$win_id" ]; then
+        break
+    fi
+    sleep 0.1
+done
 
-wmctrl -r "ScreenCap" -t 1
+# move the window to virtual desktop 2 (index 1)
+if [ -n "$win_id" ]; then
+    xdotool set_desktop_for_window "$win_id" 1
+fi
