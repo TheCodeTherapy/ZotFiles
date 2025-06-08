@@ -228,6 +228,7 @@ install_flatpak_packages() {
     com.github.Matoking.protontricks
     org.prismlauncher.PrismLauncher
     org.mozilla.firefox
+    net.pcsx2.PCSX2
   )
 
   print_info "Installing flatpak packages ..."
