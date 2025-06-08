@@ -1,0 +1,17 @@
+#!/bin/bash
+
+ffplay \
+  -noborder \
+  -x 1920 -y 1080 \
+  -window_title ScreenCap \
+  -framedrop \
+  -vf "scale=1920:1080" \
+  -framerate 30 \
+  -f x11grab \
+  -video_size 2320x1410 \
+  -i :0.0+5240,30 \
+  >/dev/null 2>&1 &
+
+sleep 3
+
+wmctrl -r "ScreenCap" -t 1
