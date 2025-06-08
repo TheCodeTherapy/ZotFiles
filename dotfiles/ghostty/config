@@ -8,7 +8,7 @@ font-family = "M+CodeLat60 Nerd Font Mono"
 window-padding-x = 10
 window-padding-y = 0
 resize-overlay = never
-window-decoration = true
+window-decoration = false
 gtk-titlebar=true
 
 gtk-adwaita=true
