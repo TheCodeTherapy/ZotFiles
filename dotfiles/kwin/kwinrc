@@ -3,8 +3,11 @@ update_info=kwin.upd:replace-scalein-with-scale,kwin.upd:port-minimizeanimation-
 
 [Desktops]
 Id_1=cb03a82f-757c-4d2e-9739-f57487987fdb
-Number=1
-Rows=1
+Id_2=b65cab46-a4c6-485f-ac6a-67ffe455e843
+Id_3=a88577fd-4c0e-4b81-a64e-37c31fac3923
+Id_4=d9278ba1-acac-4790-b08f-54e81aa545ec
+Number=4
+Rows=4
 
 [Effect-desktopgrid]
 LayoutMode=1
@@ -28,10 +31,10 @@ MultiScreenMode=1
 padding=21
 
 [Tiling][23fc0f31-5028-5021-a562-b8c6eb2559aa]
-tiles={"layoutDirection":"horizontal","tiles":[{"width":0.265},{"width":0.47},{"width":0.265}]}
+tiles={"layoutDirection":"horizontal","tiles":[{"width":0.275},{"width":0.45000000000000007},{"width":0.2749999999999999}]}
 
 [Tiling][b9b11af7-4269-5b5d-b169-39668834e305]
-tiles={"layoutDirection":"horizontal","tiles":[{"width":0.265},{"width":0.47},{"width":0.265}]}
+tiles={"layoutDirection":"horizontal","tiles":[{"width":0.275},{"width":0.45000000000000007},{"width":0.2749999999999999}]}
 
 [org.kde.kdecoration2]
 BorderSize=Tiny
