@@ -283,6 +283,8 @@ exec --no-startup-id raysession --start-session LIVE
 
 bindsym $sup+equal exec --no-startup-id ~/ZotFiles/bin/urblind 1
 
+bindsym $sup+x exec --no-startup-id ~/ZotFiles/scripts/pyretile
+
 bindsym Print exec --no-startup-id spectacle
 # bindsym --release $sup+x exec --no-startup-id import /tmp/latest-screenshot.png
 # bindsym --release $sup+Shift+c exec /home/marcogomez/dotfiles/scripts/webcamw
