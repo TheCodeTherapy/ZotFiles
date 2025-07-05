@@ -61,15 +61,60 @@ def analyze_layout():
     
     # Check if we have a mixed layout (windows + containers)
     has_tabbed_container = any(not c.window and c.nodes and len(c.nodes) > 1 for c in containers)
+    tabbed_containers = [c for c in containers if not c.window and c.nodes and len(c.nodes) > 1]
     
+    # Check for partially configured layout (tabbed container exists but extra individual windows)
+    if has_tabbed_container and len(containers) > 3:
+        print(f"Debug: Found partially configured layout with {len(containers)} containers and {len(tabbed_containers)} tabbed container(s)")
+        print("Debug: Restoring proper 3-container layout...")
+        
+        # Find the tabbed container and individual windows
+        tabbed_container = tabbed_containers[0]
+        individual_windows = [c for c in containers if c.window]
+        
+        # We should have exactly 2 outer windows (left and right)
+        # All other individual windows should be moved into the tabbed container
+        if len(individual_windows) > 2:
+            # Sort windows by x position to identify left and right
+            individual_windows.sort(key=lambda w: w.rect.x)
+            
+            # Keep the leftmost and rightmost, move the rest into tabbed container
+            leftmost = individual_windows[0]
+            rightmost = individual_windows[-1]
+            middle_individuals = individual_windows[1:-1]
+            
+            print(f"Debug: Moving {len(middle_individuals)} individual window(s) back into tabbed container")
+            
+            # Move each middle individual window into the tabbed container
+            for window in middle_individuals:
+                print(f"Debug: Moving window (id: {window.id}) back into tabbed container")
+                # Focus the window to be moved
+                i3.command(f'[con_id={window.id}] focus')
+                # Focus the tabbed container by focusing one of its windows
+                if tabbed_container.nodes:
+                    i3.command(f'[con_id={tabbed_container.nodes[0].id}] focus')
+                    # Move the individual window into the tabbed container
+                    i3.command(f'[con_id={window.id}] focus')
+                    i3.command('move left')
+                    time.sleep(0.1)
+        
+        # Refresh the layout after restoration
+        containers = find_workspace_containers()
+        windows = find_sibling_windows()
+        print(f"Debug: After restoration: {len(containers)} total containers, {len(windows)} individual windows")
+        
+        # Re-evaluate the layout
+        has_tabbed_container = any(not c.window and c.nodes and len(c.nodes) > 1 for c in containers)
+    
+    # Now analyze the clean layout
     if len(windows) == 3 and not has_tabbed_container:
         return "3_windows", containers
-    elif len(windows) == 4 and not has_tabbed_container:
-        return "4_windows", containers
+    elif len(windows) >= 4 and not has_tabbed_container:
+        return "multi_windows", containers
     elif len(containers) == 3 and has_tabbed_container:
-        return "configured_4_windows", containers
+        return "configured_layout", containers
     elif len(windows) == 2 and has_tabbed_container:
-        return "configured_4_windows", containers
+        return "configured_layout", containers
     else:
         return "unknown", containers
 
@@ -106,21 +151,32 @@ def apply_resize(container, delta):
     i3.command(f'resize {direction} width {abs(delta)} px')
 
 def create_tabbed_container_for_middle_windows(windows):
-    """Create a tabbed container for the middle two windows (index 1 and 2)."""
-    print("Creating tabbed container for middle windows...")
+    """Create a tabbed container for all middle windows (all except first and last)."""
+    num_windows = len(windows)
+    middle_windows = windows[1:-1]  # All windows except first and last
     
-    # Focus the second window (index 1)
-    i3.command(f'[con_id={windows[1].id}] focus')
+    print(f"Creating tabbed container for {len(middle_windows)} middle windows...")
+    
+    if len(middle_windows) < 2:
+        print("❌ Not enough middle windows to create tabbed container")
+        return False
+    
+    # Focus the first middle window (index 1)
+    i3.command(f'[con_id={middle_windows[0].id}] focus')
     
     # Create a new container and set it to tabbed layout
     i3.command('split vertical')
     i3.command('layout tabbed')
     
-    # Move the third window (index 2) into the tabbed container
-    i3.command(f'[con_id={windows[2].id}] focus')
-    i3.command('move left')
+    # Move all other middle windows into the tabbed container
+    for i, window in enumerate(middle_windows[1:], 1):
+        print(f"Moving middle window {i+1} into tabbed container...")
+        i3.command(f'[con_id={window.id}] focus')
+        i3.command('move left')
+        time.sleep(0.05)  # Small delay to ensure move completes
     
-    print("✅ Tabbed container created")
+    print(f"✅ Tabbed container created with {len(middle_windows)} windows")
+    return True
 
 def handle_three_windows(containers):
     """Handle the 3-window case (original logic)."""
@@ -149,16 +205,18 @@ def handle_three_windows(containers):
     print("❌ Failed to converge after maximum iterations")
     return False
 
-def handle_four_windows(containers):
-    """Handle the 4-window case with tabbed middle container."""
-    print("Handling 4-window layout...")
+def handle_multi_windows(containers):
+    """Handle N-window case (N >= 4) with tabbed middle container."""
+    num_windows = len(containers)
+    print(f"Handling {num_windows}-window layout...")
     
-    if len(containers) != 4:
-        print("❌ Expected exactly 4 windows")
+    if num_windows < 4:
+        print("❌ Expected at least 4 windows for multi-window layout")
         return False
     
-    # First, create the tabbed container for middle windows
-    create_tabbed_container_for_middle_windows(containers)
+    # Create the tabbed container for all middle windows
+    if not create_tabbed_container_for_middle_windows(containers):
+        return False
     
     # Now handle the configured layout
     return handle_configured_layout()
@@ -180,6 +238,12 @@ def handle_configured_layout():
         if not has_tabbed:
             print("❌ Expected to find a tabbed container")
             return False
+        
+        # Find the tabbed container and count its windows
+        tabbed_container = next((c for c in containers if not c.window and c.nodes), None)
+        if tabbed_container:
+            num_tabbed_windows = len(tabbed_container.nodes)
+            print(f"Debug: Tabbed container has {num_tabbed_windows} windows")
         
         total = total_width(containers)
         deltas = compute_deltas_configured_layout(containers, total)
@@ -207,13 +271,13 @@ def main():
     
     if layout_type == "3_windows":
         handle_three_windows(containers)
-    elif layout_type == "4_windows":
-        handle_four_windows(containers)
-    elif layout_type == "configured_4_windows":
+    elif layout_type == "multi_windows":
+        handle_multi_windows(containers)
+    elif layout_type == "configured_layout":
         handle_configured_layout()
     else:
         print(f"❌ Unsupported layout: {layout_type}")
-        print("Expected: 3 individual windows, 4 individual windows, or configured layout")
+        print("Expected: 3+ individual windows or configured layout")
         exit(1)
 
 if __name__ == "__main__":
