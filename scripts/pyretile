@@ -1,0 +1,193 @@
+#!/usr/bin/env python3
+
+import i3ipc
+
+# === CONFIGURATION ===
+LEFT_PCT = 27.5
+CENTER_PCT = 45
+RIGHT_PCT = 27.5
+TOLERANCE = 2
+MAX_ITERATIONS = 10
+
+i3 = i3ipc.Connection()
+
+def find_workspace_containers():
+    """Find all containers (windows and container nodes) in the current workspace."""
+    focused = i3.get_tree().find_focused()
+    ws = focused.workspace()
+    # Return all direct children of the workspace
+    return ws.nodes
+
+def find_sibling_windows():
+    """Find only window nodes in the current workspace."""
+    focused = i3.get_tree().find_focused()
+    ws = focused.workspace()
+    siblings = [n for n in ws.nodes if n.window]
+    return siblings
+
+def analyze_layout():
+    """Analyze the current layout and return layout type and containers."""
+    containers = find_workspace_containers()
+    windows = find_sibling_windows()
+    
+    print(f"Debug: Found {len(containers)} total containers, {len(windows)} individual windows")
+    
+    # Check if we have a mixed layout (windows + containers)
+    has_tabbed_container = any(not c.window and c.nodes and len(c.nodes) > 1 for c in containers)
+    
+    if len(windows) == 3 and not has_tabbed_container:
+        return "3_windows", containers
+    elif len(windows) == 4 and not has_tabbed_container:
+        return "4_windows", containers
+    elif len(containers) == 3 and has_tabbed_container:
+        return "configured_4_windows", containers
+    elif len(windows) == 2 and has_tabbed_container:
+        return "configured_4_windows", containers
+    else:
+        return "unknown", containers
+
+def total_width(containers):
+    """Calculate total width of all containers."""
+    return sum(c.rect.width for c in containers)
+
+def compute_deltas_3_windows(windows, total):
+    """Compute resize deltas for 3 windows."""
+    targets = [
+        int(total * LEFT_PCT / 100),
+        int(total * CENTER_PCT / 100),
+        int(total * RIGHT_PCT / 100)
+    ]
+    actuals = [w.rect.width for w in windows]
+    return [t - a for t, a in zip(targets, actuals)]
+
+def compute_deltas_configured_layout(containers, total):
+    """Compute resize deltas for configured layout (left, tabbed_center, right)."""
+    targets = [
+        int(total * LEFT_PCT / 100),
+        int(total * CENTER_PCT / 100),
+        int(total * RIGHT_PCT / 100)
+    ]
+    actuals = [c.rect.width for c in containers]
+    return [t - a for t, a in zip(targets, actuals)]
+
+def apply_resize(container, delta):
+    """Apply resize operation to a container."""
+    if delta == 0:
+        return
+    i3.command(f'[con_id={container.id}] focus')
+    direction = "grow" if delta > 0 else "shrink"
+    i3.command(f'resize {direction} width {abs(delta)} px')
+
+def create_tabbed_container_for_middle_windows(windows):
+    """Create a tabbed container for the middle two windows (index 1 and 2)."""
+    print("Creating tabbed container for middle windows...")
+    
+    # Focus the second window (index 1)
+    i3.command(f'[con_id={windows[1].id}] focus')
+    
+    # Create a new container and set it to tabbed layout
+    i3.command('split vertical')
+    i3.command('layout tabbed')
+    
+    # Move the third window (index 2) into the tabbed container
+    i3.command(f'[con_id={windows[2].id}] focus')
+    i3.command('move left')
+    
+    print("✅ Tabbed container created")
+
+def handle_three_windows(containers):
+    """Handle the 3-window case (original logic)."""
+    print("Handling 3-window layout...")
+    
+    for iteration in range(MAX_ITERATIONS):
+        # Refresh container list
+        containers = find_workspace_containers()
+        if len(containers) != 3:
+            print("❌ Window count changed during iteration")
+            return False
+
+        total = total_width(containers)
+        deltas = compute_deltas_3_windows(containers, total)
+
+        print(f"Iteration {iteration + 1}: Window widths: {[c.rect.width for c in containers]}")
+        print(f"Resize deltas: {deltas}")
+
+        if all(abs(d) <= TOLERANCE for d in deltas):
+            print("✅ Converged. Done.")
+            return True
+
+        for container, delta in zip(containers, deltas):
+            apply_resize(container, delta)
+    
+    print("❌ Failed to converge after maximum iterations")
+    return False
+
+def handle_four_windows(containers):
+    """Handle the 4-window case with tabbed middle container."""
+    print("Handling 4-window layout...")
+    
+    if len(containers) != 4:
+        print("❌ Expected exactly 4 windows")
+        return False
+    
+    # First, create the tabbed container for middle windows
+    create_tabbed_container_for_middle_windows(containers)
+    
+    # Now handle the configured layout
+    return handle_configured_layout()
+
+def handle_configured_layout():
+    """Handle a layout that's already configured with tabbed middle."""
+    print("Handling configured layout (left | tabbed_center | right)...")
+    
+    for iteration in range(MAX_ITERATIONS):
+        containers = find_workspace_containers()
+        
+        # Verify we have the expected structure
+        if len(containers) != 3:
+            print(f"❌ Expected 3 containers, found {len(containers)}")
+            return False
+        
+        # Check that we have the right structure: window, container, window
+        has_tabbed = any(not c.window and c.nodes and len(c.nodes) > 1 for c in containers)
+        if not has_tabbed:
+            print("❌ Expected to find a tabbed container")
+            return False
+        
+        total = total_width(containers)
+        deltas = compute_deltas_configured_layout(containers, total)
+        
+        print(f"Iteration {iteration + 1}: Container widths: {[c.rect.width for c in containers]}")
+        print(f"Resize deltas: {deltas}")
+        
+        if all(abs(d) <= TOLERANCE for d in deltas):
+            print("✅ Converged. Done.")
+            return True
+        
+        # Apply resize to each container
+        for container, delta in zip(containers, deltas):
+            apply_resize(container, delta)
+    
+    print("❌ Failed to converge after maximum iterations")
+    return False
+
+# === MAIN LOGIC ===
+def main():
+    layout_type, containers = analyze_layout()
+    
+    print(f"Detected layout type: {layout_type}")
+    print(f"Found {len(containers)} containers")
+    
+    if layout_type == "3_windows":
+        handle_three_windows(containers)
+    elif layout_type == "4_windows":
+        handle_four_windows(containers)
+    elif layout_type == "configured_4_windows":
+        handle_configured_layout()
+    else:
+        print(f"❌ Unsupported layout: {layout_type}")
+        print("Expected: 3 individual windows, 4 individual windows, or configured layout")
+        exit(1)
+
+if __name__ == "__main__":
+    main()
