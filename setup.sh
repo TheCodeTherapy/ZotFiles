@@ -38,7 +38,7 @@ install_basic_packages() {
     python3-gi python3-gi-cairo python3-cairo python3-setuptools p7zip-full
     conky-all zsh-autosuggestions zsh-syntax-highlighting xdotool bear zeal
     lnav multitail gource ccze xscreensaver xscreensaver-data-extra fortune
-    xscreensaver-gl-extra network-manager-openvpn
+    xscreensaver-gl-extra network-manager-openvpn qt5ct
   )
 
   print_info "Installing basic packages ..."
@@ -132,10 +132,10 @@ install_recipes() {
     "$recipe_dir/install_xcolor.sh"
     "$recipe_dir/install_fd.sh"
     "$recipe_dir/install_alacritty.sh"
-    # "$recipe_dir/install_i3.sh"
-    # "$recipe_dir/install_i3status.sh"
-    # "$recipe_dir/install_i3polybar.sh"
-    # "$recipe_dir/install_i3picom.sh"
+    "$recipe_dir/install_i3.sh"
+    "$recipe_dir/install_i3status.sh"
+    "$recipe_dir/install_i3polybar.sh"
+    "$recipe_dir/install_i3picom.sh"
     "$recipe_dir/install_ytdlp.sh"
     "$recipe_dir/install_urblind.sh"
     "$recipe_dir/fix_cedilla.sh"
@@ -161,11 +161,18 @@ link_dotfiles() {
   local target_home="$HOME"
   local target_config="$HOME/.config"
   local target_local_share="$HOME/.local/share"
+  local target_themes="$HOME/.themes"
 
   mkdir -p "$target_config/Code/User"
   mkdir -p "$target_config/VSCodium/User"
   mkdir -p "$target_config/systemd/user"
   mkdir -p "$target_config/environment.d"
+
+  mkdir -p "$target_config/Kvantum"
+  mkdir -p "$target_themes"
+  mkdir -p "$target_config/gtk-2.0"
+  mkdir -p "$target_config/gtk-3.0"
+  mkdir -p "$target_config/gtk-4.0"
 
   declare -A files_to_link=(
     ["${DOTDOT}/profile/profile"]="$target_home/.profile"
@@ -184,10 +191,18 @@ link_dotfiles() {
     ["${DOTDOT}/yabridgectl"]="$target_config/yabridgectl"
     ["${DOTDOT}/ghostty"]="$target_config/ghostty"
     ["${DOTDOT}/nvim"]="$target_config/nvim"
-    # ["${DOTDOT}/i3"]="$target_config/i3"
-    # ["${DOTDOT}/i3status"]="$target_config/i3status"
-    # ["${DOTDOT}/i3blocks"]="$target_config/i3blocks"
-    # ["${DOTDOT}/polybar"]="$target_config/polybar"
+    ["${DOTDOT}/i3"]="$target_config/i3"
+    ["${DOTDOT}/i3status"]="$target_config/i3status"
+    ["${DOTDOT}/i3blocks"]="$target_config/i3blocks"
+    ["${DOTDOT}/polybar"]="$target_config/polybar"
+    ["${DOTDOT}/qt5ct"]="$target_config/qt5ct"
+    ["${DOTDOT}/qt6ct"]="$target_config/qt6ct"
+    ["${DOTDOT}/themes/Kvantum"]="$target_config/Kvantum"
+    ["${DOTDOT}/themes/Nordic/gtk/Nordic"]="$target_themes/Nordic"
+    ["${DOTDOT}/themes/Catppuccin/gtk-3.0/gtk-dark.css"]="$target_config/gtk-3.0/colors.css"
+    ["${DOTDOT}/themes/Catppuccin/gtk-4.0/gtk-dark.css"]="$target_config/gtk-4.0/colors.css"
+    ["${DOTDOT}/themes/Nordic/gtk/Nordic/gtk-3.0/gtk-dark.css"]="$target_config/gtk-3.0/colors.css"
+    ["${DOTDOT}/themes/Nordic/gtk/Nordic/gtk-4.0/gtk-dark.css"]="$target_config/gtk-4.0/colors.css"
     ["${DOTDOT}/alacritty"]="$target_config/alacritty"
     ["${DOTDOT}/neofetch"]="$target_config/neofetch"
     ["${DOTDOT}/vscode/settings.json"]="$target_config/Code/User/settings.json"
