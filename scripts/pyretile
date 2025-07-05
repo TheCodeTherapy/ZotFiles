@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import i3ipc
+import time
 
 # === CONFIGURATION ===
 LEFT_PCT = 27.5
@@ -31,6 +32,32 @@ def analyze_layout():
     windows = find_sibling_windows()
     
     print(f"Debug: Found {len(containers)} total containers, {len(windows)} individual windows")
+    
+    # Check for broken tabbed containers (containers with only 1 window)
+    broken_containers = []
+    for container in containers:
+        if not container.window and container.nodes and len(container.nodes) == 1:
+            broken_containers.append(container)
+    
+    if broken_containers:
+        print(f"Debug: Found {len(broken_containers)} broken tabbed container(s) with single windows")
+        print("Debug: Flattening broken containers...")
+        
+        # Flatten broken containers by moving the single window out
+        for broken_container in broken_containers:
+            single_window = broken_container.nodes[0]
+            print(f"Debug: Flattening container with single window (id: {single_window.id})")
+            # Focus the single window and move it out of the container
+            i3.command(f'[con_id={single_window.id}] focus')
+            # Try to move the window out of the container
+            i3.command('move left')
+            # Wait a moment for the move to complete
+            time.sleep(0.1)
+        
+        # Refresh the layout after flattening
+        containers = find_workspace_containers()
+        windows = find_sibling_windows()
+        print(f"Debug: After flattening: {len(containers)} total containers, {len(windows)} individual windows")
     
     # Check if we have a mixed layout (windows + containers)
     has_tabbed_container = any(not c.window and c.nodes and len(c.nodes) > 1 for c in containers)
