@@ -194,6 +194,7 @@ link_dotfiles() {
     ["${DOTDOT}/i3"]="$target_config/i3"
     ["${DOTDOT}/i3status"]="$target_config/i3status"
     ["${DOTDOT}/i3blocks"]="$target_config/i3blocks"
+    ["${DOTDOT}/picom"]="$target_config/picom"
     ["${DOTDOT}/polybar"]="$target_config/polybar"
     ["${DOTDOT}/qt5ct"]="$target_config/qt5ct"
     ["${DOTDOT}/qt6ct"]="$target_config/qt6ct"
