@@ -4,6 +4,11 @@
   "editor.fontFamily": "'JetBrainsMono Nerd Font', 'NotoMono Nerd Font', 'M+CodeLat60 Nerd Font Mono', 'MesloLGS NF'",
   "editor.fontLigatures": false,
 
+  "svelte.enable-ts-plugin": true,
+  "workbench.editor.empty.hint": "hidden",
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "chat.editor.fontSize": 16,
+
   "workbench.startupEditor": "none",
   "workbench.colorTheme": "Catppuccin Mocha",
   "workbench.iconTheme": "catppuccin-mocha",
@@ -12,7 +17,7 @@
   "workbench.activityBar.location": "top",
   "window.menuBarVisibility": "toggle",
   "explorer.compactFolders": false,
-  "breadcrumbs.enabled": false,
+  "breadcrumbs.enabled": true,
   "editor.minimap.enabled": false,
   "editor.renderWhitespace": "none",
   "editor.lightbulb.enabled": "off",
@@ -217,6 +222,5 @@
   ],
   "C_Cpp.intelliSenseEngine": "disabled",
   "clangd.path": "/home/marcogomez/.config/Code/User/globalStorage/llvm-vs-code-extensions.vscode-clangd/install/18.1.3/clangd_18.1.3/bin/clangd",
-  "zig.zls.enabled": "on",
-  "svelte.enable-ts-plugin": true
+  "zig.zls.enabled": "on"
 }
