@@ -238,7 +238,7 @@ install_flatpak_packages() {
 
   local flatpak_apps_to_install=(
     com.discordapp.Discord
-    com.obsproject.Studio
+    # com.obsproject.Studio
     org.gimp.GIMP
     com.valvesoftware.Steam
     net.davidotek.pupgui2
