@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ "$#" -ne 2 ]; then
+  echo "Usage: $0 <DIR1> <DIR2>"
+  exit 1
+fi
+
+DIR1=$(realpath "$1")
+DIR2=$(realpath "$2")
+
+# ANSI color codes
+BLUE='\033[34m'
+ORANGE='\033[33m'
+YELLOW='\033[91m'
+RESET='\033[0m'
+
+# Directories to exclude at any depth
+EXCLUDES=( "node_modules" "build" ".nx" ".git" "coverage" )
+
+get_file_list() {
+  local base="$1"
+  find "$base" \( \
+    -path "*/node_modules" -o \
+    -path "*/build" -o \
+    -path "*/.nx" -o \
+    -path "*/.git" -o \
+    -path "*/coverage" \
+  \) -prune -false -o -type f -print | sed "s|^$base/||" | sort
+}
+
+mapfile -t FILES1 < <(get_file_list "$DIR1")
+mapfile -t FILES2 < <(get_file_list "$DIR2")
+
+declare -A ALL_FILES=()
+for f in "${FILES1[@]}"; do ALL_FILES["$f"]=1; done
+for f in "${FILES2[@]}"; do ALL_FILES["$f"]=1; done
+
+echo "Comparing:"
+echo -e "${BLUE}  $DIR1${RESET}"
+echo -e "${ORANGE}  $DIR2${RESET}"
+echo
+
+for rel_path in "${!ALL_FILES[@]}"; do
+  FILE1="$DIR1/$rel_path"
+  FILE2="$DIR2/$rel_path"
+
+  if [[ -f "$FILE1" && -f "$FILE2" ]]; then
+    if ! cmp -s "$FILE1" "$FILE2"; then
+      echo -e "${YELLOW}DIFFERS:${RESET} $rel_path"
+    fi
+  elif [[ -f "$FILE1" ]]; then
+    echo -e "${BLUE}ONLY IN DIR1:${RESET} $rel_path"
+  elif [[ -f "$FILE2" ]]; then
+    echo -e "${ORANGE}ONLY IN DIR2:${RESET} $rel_path"
+  fi
+done

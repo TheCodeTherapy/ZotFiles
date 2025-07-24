@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🔍 Scanning globally linked packages..."
+
+npm ls -g --depth=0 --link=true --json 2>/dev/null \
+  | grep -oE '"(@[^"]+)": \{' \
+  | cut -d'"' -f2 \
+  | while read -r pkg; do
+      echo "🧹 npm unlink -g $pkg"
+      npm unlink -g "$pkg"
+    done
+
+echo "✅ All globally linked npm packages unlinked."
