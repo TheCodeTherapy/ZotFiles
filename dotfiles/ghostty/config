@@ -28,8 +28,8 @@ keybind = shift+home=unbind
 keybind = control+tab=unbind
 
 custom-shader-animation = always
-custom-shader = shaders/_crt.frag
-# custom-shader = shaders/_cleaner_crt.frag
+# custom-shader = shaders/_crt.frag
+custom-shader = shaders/_cleaner_crt.frag
 
 # custom-shader = shaders/matrix-hallway.frag
 # custom-shader = shaders/bettercrt.frag
