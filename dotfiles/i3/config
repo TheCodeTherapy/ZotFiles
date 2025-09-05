@@ -13,11 +13,11 @@ set $mod Mod1
 # client.placeholder          #000000 #304848 #ffffff #000000 #303030
 # client.background           #008800
 
-client.focused            #77AAFF #77AAFF #000000 #FFFFFF   #77AAff
-client.focused_inactive   #303030 #4477AA #000000 #484E50   #5F676A
-client.unfocused          #77AAFF #212121 #77AAFF #292D2E   #222222
-client.urgent             #303030 #904848 #FFFFFF #904848   #904848
-client.placeholder        #303030 #304848 #FFFFFF #000000   #0C0C0C
+client.focused            #77AAFF #77AAFF #000000 #FFFFFF #77AAff
+client.focused_inactive   #303030 #4477AA #000000 #484E50 #5F676A
+client.unfocused          #77AAFF #212121 #77AAFF #292D2E #222222
+client.urgent             #303030 #904848 #FFFFFF #904848 #904848
+client.placeholder        #303030 #304848 #FFFFFF #000000 #0C0C0C
 client.background         #FFFFFF
 
 focus_follows_mouse yes
@@ -51,7 +51,7 @@ for_window [title="raylib"] floating enable
 floating_modifier $sup
 
 # bindsym $sup+Return exec ~/.local/bin/ghostty # start a terminal
-bindsym $sup+Return exec ~/.local/bin/wezterm
+bindsym $sup+Return exec ~/.local/bin/ghostty
 bindsym $sup+Shift+Return exec rofi -show run -theme ~/ZotFiles/dotfiles/rofi/rounded.rasi
 bindsym $sup+Tab exec ~/ZotFiles/scripts/rofitab
 bindsym $sup+Shift+q kill # kill focused window
@@ -233,7 +233,7 @@ assign [class="PrismLauncher"] $ws6
 # Workspace 7 =================================================================
 assign [class="RaySession"] $ws7
 assign [class="Ardour"] $ws7
-assign [class="obs"] $ws7
+# assign [class="obs"] $ws7
 assign [class="discord"] $ws7
 assign [class="TelegramDesktop"] $ws7
 # =============================================================================
@@ -258,6 +258,7 @@ bindsym --whole-window --border $sup+shift+button5 workspace next
 for_window [title="^Friends List$"] floating enable
 for_window [title="^Volume Control$"] floating enable
 for_window [class="spectacle"] floating enable
+# for_window [class="^Muninn$"] floating enable
 
 exec --no-startup-id picom
 
