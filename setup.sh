@@ -167,6 +167,7 @@ link_dotfiles() {
   mkdir -p "$target_config/VSCodium/User"
   mkdir -p "$target_config/systemd/user"
   mkdir -p "$target_config/environment.d"
+  mkdir -p "$target_config/dunst"
 
   mkdir -p "$target_config/Kvantum"
   mkdir -p "$target_themes"
@@ -185,6 +186,7 @@ link_dotfiles() {
     ["${DOTDOT}/x/XCompose"]="$target_home/.XCompose"
     ["${DOTDOT}/vst3"]="$target_home/.vst3"
     ["${DOTDOT}/kwin/kwinrc"]="$target_config/kwinrc"
+    ["${DOTDOT}/dunst/dunstrc"]="$target_config/dunst/dunstrc"
     ["${DOTDOT}/kwin/kwinrulesrc"]="$target_config/kwinrulesrc"
     ["${DOTDOT}/pipewire"]="$target_config/pipewire"
     ["${DOTDOT}/wireplumber"]="$target_config/wireplumber"
@@ -286,17 +288,11 @@ update_cache() {
 }
 
 post_install() {
-  if [[ -f "${DOTDIR}/BraveSoftware.tar" ]]; then
-    cd "${HOME}/.config"
-    rm -rf BraveSoftware || true
-    cp "${HOME}/ZotFiles/BraveSoftware.tar" .
-    tar -xvf BraveSoftware.tar
-    rm BraveSoftware.tar
-  fi
   sudo usermod -a -G audio $USER
   systemctl --user daemon-reexec
   systemctl --user daemon-reload
   systemctl --user enable --now virtual-mic.service
+  xdg-mime default org.kde.dolphin.desktop inode/directory application/x-directory
   sudo loginctl enable-linger $USER
 }
 
