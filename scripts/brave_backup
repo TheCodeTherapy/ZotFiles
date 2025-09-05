@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SRC="/home/marcogomez/.config/BraveSoftware"
+DEST="$HOME/ZotFiles/BraveSoftware.tar"
+
+# Ensure destination dir exists
+mkdir -p "$(dirname "$DEST")"
+
+echo "Backing up $SRC → $DEST"
+tar -cf "$DEST" -C "$(dirname "$SRC")" "$(basename "$SRC")"
+
+echo "Backup completed."

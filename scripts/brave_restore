@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DEST="/home/marcogomez/.config"
+SRC="$HOME/ZotFiles/BraveSoftware.tar"
+
+if [[ ! -f "$SRC" ]]; then
+  echo "Backup archive not found: $SRC"
+  exit 1
+fi
+
+echo "Restoring $SRC → $DEST"
+tar -xf "$SRC" -C "$DEST"
+
+echo "Restore completed."
