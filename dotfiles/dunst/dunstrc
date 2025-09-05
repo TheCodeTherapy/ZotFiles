@@ -35,7 +35,7 @@
     # Positive y value is measured from the top of the screen
     geometry = "300x5-50+75"
 
-    font = Roboto 10
+    font = Roboto 17
     allow_markup = yes
     plain_text = no             # Treat message as plain text
     sort = yes                  # Sort messages by urgency
