@@ -26,6 +26,27 @@ def find_sibling_windows():
     siblings = [n for n in ws.nodes if n.window]
     return siblings
 
+def get_window_info(node):
+    """Get information about a window node."""
+    if node.window:
+        return f"Window: {node.name or 'Unnamed'} (id: {node.id})"
+    else:
+        return f"Container (id: {node.id})"
+
+def list_container_contents(containers):
+    """List the contents of all containers for debugging."""
+    print("\n=== Container Analysis ===")
+    for i, container in enumerate(containers):
+        if container.window:
+            print(f"Container {i+1}: {get_window_info(container)}")
+        else:
+            print(f"Container {i+1}: Container (id: {container.id}) with {len(container.nodes)} child(ren)")
+            if container.layout:
+                print(f"  Layout: {container.layout}")
+            for j, child in enumerate(container.nodes):
+                print(f"    Child {j+1}: {get_window_info(child)}")
+    print("=== End Container Analysis ===\n")
+
 def analyze_layout():
     """Analyze the current layout and return layout type and containers."""
     containers = find_workspace_containers()
@@ -262,6 +283,46 @@ def handle_configured_layout():
     print("❌ Failed to converge after maximum iterations")
     return False
 
+def attempt_auto_fix(containers):
+    """Attempt to automatically fix common unsupported layouts."""
+    print("\n🔧 Attempting automatic fix...")
+    
+    if len(containers) == 1 and not containers[0].window:
+        # Single container with multiple windows - try to split them out
+        container = containers[0]
+        if len(container.nodes) >= 3:
+            print(f"Found single container with {len(container.nodes)} windows. Attempting to split...")
+            
+            # Focus the first window and move it out to create left pane
+            if container.nodes:
+                first_window = container.nodes[0]
+                print(f"Moving first window out to create left pane...")
+                i3.command(f'[con_id={first_window.id}] focus')
+                i3.command('move left')
+                time.sleep(0.2)
+                
+                # Check if we have more than 2 windows left in container
+                # Refresh to see current state
+                containers = find_workspace_containers()
+                remaining_container = None
+                for c in containers:
+                    if not c.window and c.nodes and len(c.nodes) > 1:
+                        remaining_container = c
+                        break
+                
+                if remaining_container and len(remaining_container.nodes) >= 2:
+                    # Move the last window out to create right pane
+                    last_window = remaining_container.nodes[-1]
+                    print(f"Moving last window out to create right pane...")
+                    i3.command(f'[con_id={last_window.id}] focus')
+                    i3.command('move right')
+                    time.sleep(0.2)
+                    
+                    print("✅ Successfully split windows into 3-pane layout")
+                    return True
+    
+    return False
+
 # === MAIN LOGIC ===
 def main():
     layout_type, containers = analyze_layout()
@@ -278,6 +339,38 @@ def main():
     else:
         print(f"❌ Unsupported layout: {layout_type}")
         print("Expected: 3+ individual windows or configured layout")
+        
+        # Show detailed information about what's in the containers
+        list_container_contents(containers)
+        
+        # Try automatic fix
+        if attempt_auto_fix(containers):
+            print("\n🔄 Retrying with fixed layout...")
+            time.sleep(0.3)  # Give i3 time to settle
+            main()  # Retry with the fixed layout
+            return
+        
+        # Provide suggestions based on what we found
+        windows = find_sibling_windows()
+        has_tabbed_container = any(not c.window and c.nodes and len(c.nodes) > 1 for c in containers)
+        
+        print("💡 Manual fix suggestions:")
+        if len(containers) == 1 and not containers[0].window:
+            # Single container with multiple windows
+            container = containers[0]
+            if len(container.nodes) >= 3:
+                print(f"  - You have {len(container.nodes)} windows in a single container")
+                print("  - Try splitting some windows out: focus a window and use 'Sup+Shift+←/→' to move it")
+                print("  - Or run: i3-msg '[con_id=<window_id>] focus; move left' for some windows")
+        elif len(containers) == 2:
+            print("  - You have 2 containers. You might need to:")
+            print("    1. Split one of them to create 3 containers, or")
+            print("    2. Move windows between containers to create the desired layout")
+        elif len(containers) > 3:
+            print(f"  - You have {len(containers)} containers. Try consolidating some:")
+            print("    1. Move some windows into the same container to reduce container count")
+            print("    2. Use tabbed layout for middle windows")
+        
         exit(1)
 
 if __name__ == "__main__":
