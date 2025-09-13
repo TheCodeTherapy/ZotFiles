@@ -143,7 +143,6 @@ install_recipes() {
     "$recipe_dir/install_oh-my-zsh.sh"
     "$recipe_dir/install_powerlevel10k.sh"
     "$recipe_dir/install_ghostty.sh"
-    "$recipe_dir/install_wezterm.sh"
   )
 
   for recipe in "${recipes[@]}"; do
@@ -202,8 +201,6 @@ link_dotfiles() {
     ["${DOTDOT}/qt6ct"]="$target_config/qt6ct"
     ["${DOTDOT}/themes/Kvantum"]="$target_config/Kvantum"
     ["${DOTDOT}/themes/Nordic/gtk/Nordic"]="$target_themes/Nordic"
-    ["${DOTDOT}/themes/Catppuccin/gtk-3.0/gtk-dark.css"]="$target_config/gtk-3.0/colors.css"
-    ["${DOTDOT}/themes/Catppuccin/gtk-4.0/gtk-dark.css"]="$target_config/gtk-4.0/colors.css"
     ["${DOTDOT}/themes/Nordic/gtk/Nordic/gtk-3.0/gtk-dark.css"]="$target_config/gtk-3.0/colors.css"
     ["${DOTDOT}/themes/Nordic/gtk/Nordic/gtk-4.0/gtk-dark.css"]="$target_config/gtk-4.0/colors.css"
     ["${DOTDOT}/alacritty"]="$target_config/alacritty"
@@ -214,7 +211,6 @@ link_dotfiles() {
     ["${DOTDOT}/environment.d"]="$target_config/environment.d"
     ["${DOTDOT}/local/share/ghostty"]="$target_local_share/ghostty"
     ["${DOTDOT}/fonts"]="$target_home/.fonts"
-    ["${DOTDOT}/wezterm/wezterm.lua"]="$target_home/.wezterm.lua"
     ["${DOTDOT}/systemd/user/virtual-mic.service"]="$target_config/systemd/user/virtual-mic.service"
   )
 
