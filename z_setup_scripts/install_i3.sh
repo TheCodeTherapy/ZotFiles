@@ -30,7 +30,7 @@ install_i3() {
 
     cd "$DOTDIR" || handle_error "Failed to return to $DOTDIR"
 
-    sudo apt install -y i3lock i3blocks
+    sudo apt install -y i3lock i3blocks python3-i3ipc
 
     print_success "i3 installed successfully."
   fi
